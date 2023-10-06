@@ -141,6 +141,7 @@ function App() {
           >
             <Input />
           </Form.Item>
+          {/* Add similar Form.Item elements for other user properties (e.g., password, phone) */}
         </Form>
       </Modal>
     </div>
