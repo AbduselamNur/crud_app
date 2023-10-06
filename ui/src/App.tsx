@@ -46,10 +46,10 @@ function App() {
     {
       key: "6",
       title: "Action",
-      render: () => (
+      render: (text: string, record: User) => (
         <div>
           <EditOutlined style={{ color: "green" }} />
-          <DeleteOutlined style={{ color: "red", marginLeft: 12 }} />
+          <DeleteOutlined style={{ color: "red", marginLeft: 12 }} onClick={() => handleDelete(record.id)} />
         </div>
       ),
     },
@@ -88,6 +88,10 @@ function App() {
   const handleCancel = () => {
     form.resetFields();
     setIsModalVisible(false);
+  };
+  const handleDelete = (userid: number) => {
+    const updatedData = dataSource.filter((user) => user.id !== userid);
+    setDataSource(updatedData);
   };
 
   return (
