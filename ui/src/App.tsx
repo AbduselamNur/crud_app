@@ -1,6 +1,6 @@
 import "antd/dist/reset.css";
 import "./App.css";
-import { Button, Table} from "antd";
+import { Button, Table, Modal } from "antd";
 import { useState } from "react";
 import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
 
@@ -27,6 +27,7 @@ function App() {
       password: 87654,
       phone: 1234567890,
     },
+
     {
       id: 4,
       name: "Sam",
@@ -65,10 +66,13 @@ function App() {
       key: "6",
       title: "Action",
       render: () => (
-        <>
+        <div>
           <EditOutlined style={{color: "green"}}/>
           <DeleteOutlined style={{ color: "red", marginLeft: 12}}/>
-        </>
+          <Modal title="Edit User">
+            <p>Some contents...</p>
+            </Modal>   
+        </div>
       ),
     }
   ];
