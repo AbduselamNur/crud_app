@@ -1,33 +1,38 @@
 import "antd/dist/reset.css";
 import "./App.css";
-import { Button, Table, Modal, Input } from "antd";
+import { Button, Table} from "antd";
 import { useState } from "react";
+import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
 
 function App() {
-  const [dataSource, setDataSource] = useState([
+  const [dataSource] = useState([
     {
       id: 1,
       name: "John",
       email: "john@gmail.com",
-      address: "John Address",
+      password: 987654,
+      phone: 1234567890,
     },
     {
       id: 2,
       name: "David",
       email: "david@gmail.com",
-      address: "David Address",
+      password: 8765,
+      phone: 1234567890,
     },
     {
       id: 3,
       name: "James",
       email: "james@gmail.com",
-      address: "James Address",
+      password: 87654,
+      phone: 1234567890,
     },
     {
       id: 4,
       name: "Sam",
       email: "sam@gmail.com",
-      address: "Sam Address",
+      password: 234565,
+      phone: 1234567890,
     },
   ]);
   const columns = [
@@ -48,14 +53,29 @@ function App() {
     },
     {
       key: "4",
-      title: "Address",
-      dataIndex: "address",
+      title: "Password",
+      dataIndex: "password",
     },
+    {
+      key: "5",
+      title: "Phone Number",
+      dataIndex: "phone",
+    },
+    {
+      key: "6",
+      title: "Action",
+      render: () => (
+        <>
+          <EditOutlined style={{color: "green"}}/>
+          <DeleteOutlined style={{ color: "red", marginLeft: 12}}/>
+        </>
+      ),
+    }
   ];
   return (
     <div className="App">
       <header className="App-header">
-        <Button>Add a new Student</Button>
+        <Button style={{background: "greenyellow", marginBottom: 20}}>Add User</Button>
         <Table columns={columns} dataSource={dataSource}></Table>
       </header>
     </div>
