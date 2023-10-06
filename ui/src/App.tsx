@@ -48,7 +48,7 @@ function App() {
       title: "Action",
       render: (text: string, record: User) => (
         <div>
-          <EditOutlined style={{ color: "green" }} />
+          <EditOutlined style={{ color: "green" }} onClick={() => showEditModal(record)}/>
           <DeleteOutlined style={{ color: "red", marginLeft: 12 }} onClick={() => handleDelete(record.id)} />
         </div>
       ),
@@ -57,11 +57,20 @@ function App() {
 
   // State for controlling the modal visibility and form data
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [editUser, setEditUser] = useState<User | null>(null);
+
 
   // Function to show the modal
   const showModal = () => {
     setIsModalVisible(true);
+  };
+
+  const showEditModal = (user: User) => {
+    setEditUser(user);
+    setIsEditModalVisible(true);
   };
 
   // Function to handle form submission
@@ -84,6 +93,23 @@ function App() {
       });
   };
 
+  const handleEditOk = () => {
+    editForm
+      .validateFields()
+      .then((values) => {
+        const updatedUser = { ...editUser!, ...values };
+        const updatedDataSource = dataSource.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        );
+        setDataSource(updatedDataSource);
+        editForm.resetFields();
+        setIsEditModalVisible(false);
+      })
+      .catch((errorInfo) => {
+        console.log("Validation failed:", errorInfo);
+      });
+  };
+
   // Function to handle modal cancel
   const handleCancel = () => {
     form.resetFields();
@@ -92,6 +118,10 @@ function App() {
   const handleDelete = (userid: number) => {
     const updatedData = dataSource.filter((user) => user.id !== userid);
     setDataSource(updatedData);
+  };
+  const handleEditCancel = () => {
+    editForm.resetFields();
+    setIsEditModalVisible(false);
   };
 
   return (
@@ -143,6 +173,51 @@ function App() {
             label="Phone Number"
             rules={[{ required: true, message: "Please enter a phone number" }]}
           >
+            <Input />
+          </Form.Item>
+          {/* Add similar Form.Item elements for other user properties (e.g., password, phone) */}
+        </Form>
+      </Modal>
+      <Modal
+        title="Edit User"
+        visible={isEditModalVisible}
+        onOk={handleEditOk}
+        onCancel={handleEditCancel}
+      >
+        <Form form={editForm} name="editUserForm">
+          <Form.Item
+            name="name"
+            label="Name"
+            rules={[{ required: true, message: "Please enter a name" }]}
+            initialValue={editUser?.name}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: "Please enter an email" },
+              { type: "email", message: "Invalid email format" },
+            ]}
+            initialValue={editUser?.email}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[{ required: true, message: "Please enter a password" }]}
+            initialValue={editUser?.password}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="Phone Number"
+            rules={[{ required: true, message: "Please enter a phone number" }]}
+            initialValue={editUser?.phone}
+          > 
             <Input />
           </Form.Item>
           {/* Add similar Form.Item elements for other user properties (e.g., password, phone) */}
