@@ -17,4 +17,3 @@ model User {
   password  String
   phone     String? @unique
 }
-
