@@ -80,7 +80,7 @@ function App() {
       .then(async (values) => {
         try {
           // Send a POST request to your API to create a new user
-          const response = await axios.post('http://localhost:3000/users', values);
+          const response = await axios.post('http://localhost:3001/users', values);
 
           if (response.status === 201) {
             message.success('User created successfully');
