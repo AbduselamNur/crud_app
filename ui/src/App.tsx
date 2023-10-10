@@ -1,55 +1,54 @@
-import "antd/dist/reset.css";
-import "./App.css";
-import { Button, Table, Modal, Form, Input } from "antd";
-import React, { useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import 'antd/dist/reset.css';
+import './App.css';
+import { Button, Table, Modal, Form, Input, message } from 'antd';
+import React, { useState } from 'react';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 interface User {
   id: number;
   name: string;
   email: string;
-  password: string | number; // Change the type as needed
-  phone: string | number;    // Change the type as needed
+  password: string | number;
+  phone: string | number;
 }
 
 function App() {
-  const [dataSource, setDataSource] = useState<User[]>([
-    // Your initial data here...
-  ]);
+  const [dataSource, setDataSource] = useState<User[]>([]);
 
   const columns = [
     {
-      key: "1",
-      title: "ID",
-      dataIndex: "id",
+      key: '1',
+      title: 'ID',
+      dataIndex: 'id',
     },
     {
-      key: "2",
-      title: "Name",
-      dataIndex: "name",
+      key: '2',
+      title: 'Name',
+      dataIndex: 'name',
     },
     {
-      key: "3",
-      title: "Email",
-      dataIndex: "email",
+      key: '3',
+      title: 'Email',
+      dataIndex: 'email',
     },
     {
-      key: "4",
-      title: "Password",
-      dataIndex: "password",
+      key: '4',
+      title: 'Password',
+      dataIndex: 'password',
     },
     {
-      key: "5",
-      title: "Phone Number",
-      dataIndex: "phone",
+      key: '5',
+      title: 'Phone Number',
+      dataIndex: 'phone',
     },
     {
-      key: "6",
-      title: "Action",
+      key: '6',
+      title: 'Action',
       render: (text: string, record: User) => (
         <div>
-          <EditOutlined style={{ color: "green" }} onClick={() => showEditModal(record)}/>
-          <DeleteOutlined style={{ color: "red", marginLeft: 12 }} onClick={() => handleDelete(record.id)} />
+          <EditOutlined style={{ color: 'green' }} onClick={() => showEditModal(record)} />
+          <DeleteOutlined style={{ color: 'red', marginLeft: 12 }} onClick={() => handleDelete(record.id)} />
         </div>
       ),
     },
@@ -62,14 +61,15 @@ function App() {
   const [editForm] = Form.useForm();
   const [editUser, setEditUser] = useState<User | null>(null);
 
-
   // Function to show the modal
   const showModal = () => {
+    form.resetFields();
     setIsModalVisible(true);
   };
 
   const showEditModal = (user: User) => {
     setEditUser(user);
+    editForm.setFieldsValue(user);
     setIsEditModalVisible(true);
   };
 
@@ -77,19 +77,27 @@ function App() {
   const handleOk = () => {
     form
       .validateFields()
-      .then((values) => {
-        // Here, you can add logic to send the form values to your API or update the dataSource.
-        // For now, let's just add a new item to the dataSource for demonstration purposes.
-        const newUser: User = {
-          id: dataSource.length + 1,
-          ...values,
-        };
-        setDataSource([...dataSource, newUser]);
-        form.resetFields();
-        setIsModalVisible(false);
+      .then(async (values) => {
+        try {
+          // Send a POST request to your API to create a new user
+          const response = await axios.post('http://localhost:3000/users', values);
+
+          if (response.status === 201) {
+            message.success('User created successfully');
+            const newUser: User = { id: response.data.id, ...values };
+            setDataSource([...dataSource, newUser]);
+            form.resetFields();
+            setIsModalVisible(false);
+          } else {
+            message.error('Failed to create user');
+          }
+        } catch (error) {
+          console.error('Error creating user:', error);
+          message.error('Failed to create user');
+        }
       })
       .catch((errorInfo) => {
-        console.log("Validation failed:", errorInfo);
+        console.log('Validation failed:', errorInfo);
       });
   };
 
@@ -106,7 +114,7 @@ function App() {
         setIsEditModalVisible(false);
       })
       .catch((errorInfo) => {
-        console.log("Validation failed:", errorInfo);
+        console.log('Validation failed:', errorInfo);
       });
   };
 
@@ -115,10 +123,12 @@ function App() {
     form.resetFields();
     setIsModalVisible(false);
   };
+
   const handleDelete = (userid: number) => {
     const updatedData = dataSource.filter((user) => user.id !== userid);
     setDataSource(updatedData);
   };
+
   const handleEditCancel = () => {
     editForm.resetFields();
     setIsEditModalVisible(false);
@@ -128,7 +138,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Button
-          style={{ background: "greenyellow", marginBottom: 20 }}
+          style={{ background: 'greenyellow', marginBottom: 20 }}
           onClick={showModal}
         >
           Add User
@@ -143,11 +153,11 @@ function App() {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form form={form} name="addUserForm">
+        <Form form={form} name="addUserForm" layout="vertical">
           <Form.Item
             name="name"
             label="Name"
-            rules={[{ required: true, message: "Please enter a name" }]}
+            rules={[{ required: true, message: 'Please enter a name' }]}
           >
             <Input />
           </Form.Item>
@@ -155,8 +165,8 @@ function App() {
             name="email"
             label="Email"
             rules={[
-              { required: true, message: "Please enter an email" },
-              { type: "email", message: "Invalid email format" },
+              { required: true, message: 'Please enter an email' },
+              { type: 'email', message: 'Invalid email format' },
             ]}
           >
             <Input />
@@ -164,14 +174,14 @@ function App() {
           <Form.Item
             name="password"
             label="Password"
-            rules={[{ required: true, message: "Please enter a password" }]}
+            rules={[{ required: true, message: 'Please enter a password' }]}
           >
-            <Input /> 
+            <Input />
           </Form.Item>
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[{ required: true, message: "Please enter a phone number" }]}
+            rules={[{ required: true, message: 'Please enter a phone number' }]}
           >
             <Input />
           </Form.Item>
@@ -188,7 +198,7 @@ function App() {
           <Form.Item
             name="name"
             label="Name"
-            rules={[{ required: true, message: "Please enter a name" }]}
+            rules={[{ required: true, message: 'Please enter a name' }]}
             initialValue={editUser?.name}
           >
             <Input />
@@ -197,8 +207,8 @@ function App() {
             name="email"
             label="Email"
             rules={[
-              { required: true, message: "Please enter an email" },
-              { type: "email", message: "Invalid email format" },
+              { required: true, message: 'Please enter an email' },
+              { type: 'email', message: 'Invalid email format' },
             ]}
             initialValue={editUser?.email}
           >
@@ -207,7 +217,7 @@ function App() {
           <Form.Item
             name="password"
             label="Password"
-            rules={[{ required: true, message: "Please enter a password" }]}
+            rules={[{ required: true, message: 'Please enter a password' }]}
             initialValue={editUser?.password}
           >
             <Input />
@@ -215,9 +225,9 @@ function App() {
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[{ required: true, message: "Please enter a phone number" }]}
+            rules={[{ required: true, message: 'Please enter a phone number' }]}
             initialValue={editUser?.phone}
-          > 
+          >
             <Input />
           </Form.Item>
           {/* Add similar Form.Item elements for other user properties (e.g., password, phone) */}
