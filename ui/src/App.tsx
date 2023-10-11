@@ -134,9 +134,13 @@ function App() {
     setIsModalVisible(false);
   };
 
-  const handleDelete = (userId: number) => {
-    // Delete user using a DELETE request here
-    queryClient.invalidateQueries('users');
+  const handleDelete = async (userId: number) => {
+    try {
+      await axios.delete(`${API_ENDPOINT}/${userId}`);
+      queryClient.invalidateQueries('users');
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
   const handleEditCancel = () => {
