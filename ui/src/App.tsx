@@ -72,7 +72,7 @@ function App() {
             onClick={() => showEditModal(record)}
           />
           <DeleteOutlined
-            style={{ color: 'red', marginLeft: 12 }}
+            style={{ color: 'red', marginLeft: 15 }}
             onClick={() => handleDelete(record.id)}
           />
         </div>
@@ -188,7 +188,7 @@ function App() {
             label="Name"
             rules={[{ required: true, message: 'Please enter a name' }]}
           >
-            <Input />
+            <Input type='name'/>
           </Form.Item>
           <Form.Item
             name="email"
@@ -198,7 +198,7 @@ function App() {
               { type: 'email', message: 'Invalid email format' },
             ]}
           >
-            <Input />
+            <Input type='email'/>
           </Form.Item>
           <Form.Item
             name="password"
@@ -214,7 +214,7 @@ function App() {
               { required: true, message: 'Please enter a phone number' },
             ]}
           >
-            <Input />
+            <Input type='phone'/>
           </Form.Item>
         </Form>
       </Modal>
@@ -242,7 +242,7 @@ function App() {
             ]}
             initialValue={editUser?.email}
           >
-            <Input />
+            <Input type='email'/>
           </Form.Item>
           <Form.Item
             name="password"
@@ -250,7 +250,7 @@ function App() {
             rules={[{ required: true, message: 'Please enter a password' }]}
             initialValue={editUser?.password}
           >
-            <Input />
+            <Input type='password'/>
           </Form.Item>
           <Form.Item
             name="phone"
@@ -260,7 +260,7 @@ function App() {
             ]}
             initialValue={editUser?.phone}
           >
-            <Input />
+            <Input type="phone"/>
           </Form.Item>
         </Form>
       </Modal>
