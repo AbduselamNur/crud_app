@@ -204,8 +204,9 @@ function App() {
             name="password"
             label="Password"
             rules={[{ required: true, message: 'Please enter a password' }]}
+            
           >
-            <Input type='password'/>
+            <Input.Password/>
           </Form.Item>
           <Form.Item
             name="phone"
@@ -250,7 +251,7 @@ function App() {
             rules={[{ required: true, message: 'Please enter a password' }]}
             initialValue={editUser?.password}
           >
-            <Input type='password'/>
+            <Input.Password />
           </Form.Item>
           <Form.Item
             name="phone"
