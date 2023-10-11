@@ -1,6 +1,6 @@
 import 'antd/dist/reset.css';
 import './App.css';
-import { Button, Table, Modal, Form, Input, message } from 'antd';
+import { Button, Table, Modal, Form, Input, message} from 'antd';
 import React, { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import {
@@ -171,7 +171,9 @@ function App() {
         >
           Add User
         </Button>
+        <div style={{ overflowX: 'auto'}}>
         <Table columns={columns} dataSource={dataSource} />
+        </div>
       </header>
 
       <Modal
@@ -203,7 +205,7 @@ function App() {
             label="Password"
             rules={[{ required: true, message: 'Please enter a password' }]}
           >
-            <Input />
+            <Input type='password'/>
           </Form.Item>
           <Form.Item
             name="phone"
@@ -222,7 +224,7 @@ function App() {
         onOk={handleEditOk}
         onCancel={handleEditCancel}
       >
-        <Form form={editForm} name="editUserForm">
+        <Form form={editForm} name="editUserForm" layout='vertical'>
           <Form.Item
             name="name"
             label="Name"
