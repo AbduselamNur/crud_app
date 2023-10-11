@@ -5,7 +5,7 @@
 
 ![Dashbord](./img/dashbord.png)
 
-## `Adding User
+## `Adding User`
 
 ![AddUser](./img/addUser.png)
 
