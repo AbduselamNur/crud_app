@@ -1,7 +1,7 @@
 # crud_app
 
 
-## `Dashbord
+## `Dashbord`
 
 ![Dashbord](./img/dashbord.png)
 
