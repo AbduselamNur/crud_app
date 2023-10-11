@@ -115,14 +115,22 @@ function App() {
   };
   
 
-  const handleEditOk = () => {
+   const handleEditOk = () => {
     editForm
       .validateFields()
       .then((values) => {
-        const updatedUser = { ...editUser!, ...values };
-        // Update user using a PUT or PATCH request here
-        queryClient.invalidateQueries('users');
-        setIsEditModalVisible(false);
+        // Update user using a PUT request
+        if (editUser) {
+          axios
+            .patch(`${API_ENDPOINT}/${editUser.id}`, values) // Use the user's ID to specify the user to update
+            .then((response) => {
+              queryClient.invalidateQueries('users');
+              setIsEditModalVisible(false);
+            })
+            .catch((error) => {
+              console.error('Error updating user:', error);
+            });
+        }
       })
       .catch((errorInfo) => {
         console.log('Validation failed:', errorInfo);
