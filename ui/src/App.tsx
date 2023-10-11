@@ -3,7 +3,18 @@ import './App.css';
 import { Button, Table, Modal, Form, Input, message } from 'antd';
 import React, { useState } from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from 'react-query';
 import axios from 'axios';
+
+const API_ENDPOINT = 'http://localhost:3001/users';
+
+const queryClient = new QueryClient();
 
 interface User {
   id: number;
@@ -14,7 +25,16 @@ interface User {
 }
 
 function App() {
-  const [dataSource, setDataSource] = useState<User[]>([]);
+  const queryClient = useQueryClient();
+
+  const { data: dataSource } = useQuery<User[]>('users', async () => {
+    const response = await axios.get(API_ENDPOINT);
+    return response.data;
+  });
+
+  const addUserMutation = useMutation((newUser: User) => {
+    return axios.post(API_ENDPOINT, newUser);
+  });
 
   const columns = [
     {
@@ -47,23 +67,26 @@ function App() {
       title: 'Action',
       render: (text: string, record: User) => (
         <div>
-          <EditOutlined style={{ color: 'green' }} onClick={() => showEditModal(record)} />
-          <DeleteOutlined style={{ color: 'red', marginLeft: 12 }} onClick={() => handleDelete(record.id)} />
+          <EditOutlined
+            style={{ color: 'green' }}
+            onClick={() => showEditModal(record)}
+          />
+          <DeleteOutlined
+            style={{ color: 'red', marginLeft: 12 }}
+            onClick={() => handleDelete(record.id)}
+          />
         </div>
       ),
     },
   ];
 
-  // State for controlling the modal visibility and form data
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
   const [editUser, setEditUser] = useState<User | null>(null);
 
-  // Function to show the modal
   const showModal = () => {
-    form.resetFields();
     setIsModalVisible(true);
   };
 
@@ -73,44 +96,32 @@ function App() {
     setIsEditModalVisible(true);
   };
 
-  // Function to handle form submission
   const handleOk = () => {
     form
       .validateFields()
-      .then(async (values) => {
-        try {
-          // Send a POST request to your API to create a new user
-          const response = await axios.post('http://localhost:3001/users', values);
-
-          if (response.status === 201) {
-            message.success('User created successfully');
-            const newUser: User = { id: response.data.id, ...values };
-            setDataSource([...dataSource, newUser]);
-            form.resetFields();
+      .then((values) => {
+        const newUser: User = { id: (dataSource?.length || 0) + 1, ...values };
+        addUserMutation.mutate(newUser, {
+          onSettled: () => {
+            queryClient.invalidateQueries('users');
             setIsModalVisible(false);
-          } else {
-            message.error('Failed to create user');
-          }
-        } catch (error) {
-          console.error('Error creating user:', error);
-          message.error('Failed to create user');
-        }
+          },
+        });
+        form.resetFields();
       })
       .catch((errorInfo) => {
         console.log('Validation failed:', errorInfo);
       });
   };
+  
 
   const handleEditOk = () => {
     editForm
       .validateFields()
       .then((values) => {
         const updatedUser = { ...editUser!, ...values };
-        const updatedDataSource = dataSource.map((user) =>
-          user.id === updatedUser.id ? updatedUser : user
-        );
-        setDataSource(updatedDataSource);
-        editForm.resetFields();
+        // Update user using a PUT or PATCH request here
+        queryClient.invalidateQueries('users');
         setIsEditModalVisible(false);
       })
       .catch((errorInfo) => {
@@ -118,15 +129,14 @@ function App() {
       });
   };
 
-  // Function to handle modal cancel
   const handleCancel = () => {
     form.resetFields();
     setIsModalVisible(false);
   };
 
-  const handleDelete = (userid: number) => {
-    const updatedData = dataSource.filter((user) => user.id !== userid);
-    setDataSource(updatedData);
+  const handleDelete = (userId: number) => {
+    // Delete user using a DELETE request here
+    queryClient.invalidateQueries('users');
   };
 
   const handleEditCancel = () => {
@@ -143,17 +153,16 @@ function App() {
         >
           Add User
         </Button>
-        <Table columns={columns} dataSource={dataSource}></Table>
+        <Table columns={columns} dataSource={dataSource} />
       </header>
 
-      {/* Modal for adding a new user */}
       <Modal
         title="Add User"
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form form={form} name="addUserForm" layout="vertical">
+        <Form form={form} name="addUserForm" layout='vertical'>
           <Form.Item
             name="name"
             label="Name"
@@ -181,11 +190,12 @@ function App() {
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[{ required: true, message: 'Please enter a phone number' }]}
+            rules={[
+              { required: true, message: 'Please enter a phone number' },
+            ]}
           >
             <Input />
           </Form.Item>
-          {/* Add similar Form.Item elements for other user properties (e.g., password, phone) */}
         </Form>
       </Modal>
       <Modal
@@ -225,16 +235,23 @@ function App() {
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[{ required: true, message: 'Please enter a phone number' }]}
+            rules={[
+              { required: true, message: 'Please enter a phone number' },
+            ]}
             initialValue={editUser?.phone}
           >
             <Input />
           </Form.Item>
-          {/* Add similar Form.Item elements for other user properties (e.g., password, phone) */}
         </Form>
       </Modal>
     </div>
   );
 }
 
-export default App;
+export default function WrappedApp() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  );
+}
