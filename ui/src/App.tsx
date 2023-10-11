@@ -105,12 +105,14 @@ function App() {
           onSettled: () => {
             queryClient.invalidateQueries('users');
             setIsModalVisible(false);
+            message.success('User added successfully');
           },
         });
         form.resetFields();
       })
       .catch((errorInfo) => {
         console.log('Validation failed:', errorInfo);
+        message.error('User not added');
       });
   };
   
@@ -126,9 +128,11 @@ function App() {
             .then((response) => {
               queryClient.invalidateQueries('users');
               setIsEditModalVisible(false);
+              message.success('User updated successfully');
             })
             .catch((error) => {
               console.error('Error updating user:', error);
+              message.error('User not updated');
             });
         }
       })
@@ -146,8 +150,10 @@ function App() {
     try {
       await axios.delete(`${API_ENDPOINT}/${userId}`);
       queryClient.invalidateQueries('users');
+      message.success('User deleted successfully');
     } catch (error) {
       console.error('Error deleting user:', error);
+      message.error('User not deleted');
     }
   };
 
