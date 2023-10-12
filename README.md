@@ -17,6 +17,6 @@
 
 ![DataBase](./img/db.png)
 
-If You Change The DataBase Don't Forget Migrate The Database
+Don't Forget To Change The Database And Migrate The Database. Here
 
     `npx prisma migrate dev --name "init"`
