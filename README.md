@@ -17,6 +17,6 @@
 
 ![DataBase](./img/db.png)
 
-Don't Forget To Change The Database And Migrate The Database. Here
+Don't Forget Changing The Database And Migrate The Database
 
     npx prisma migrate dev --name "init"
