@@ -202,7 +202,17 @@ function App() {
           <Form.Item
             name="password"
             label="Password"
-            rules={[{ required: true, message: "Please enter a password" }]}
+            rules={[
+              { required: true, message: "Please enter a password" },
+              {
+                validator: (_, value) =>
+                  value.length >= 8
+                    ? Promise.resolve()
+                    : Promise.reject(
+                        new Error("Password must be at least 8 characters long")
+                      ),
+              },
+            ]}
           >
             <Input.Password />
           </Form.Item>
